@@ -141,7 +141,7 @@ def show_text(screen,text,x,y,color,size):
             (font.render(line, True, color)).get_rect())
         TextRect.center = (x,y)
         screen.blit(TextSurf, TextRect)
-        y+=size #real sexy text generator
+        y+=size
 
 def move_all(orbs,world):
     for orb in orbs:
@@ -167,12 +167,11 @@ def move_all(orbs,world):
                         move = (other.orb_body.position[0]+vector[0],
                             other.orb_body.position[1]+vector[1])
                         other.orb_body.transform = (move,other.orb_body.angle)
-                        #hmm
                     else:
                         world.DestroyBody(other.orb_body)
                         orbs.remove(other)
                     orb.addMass(.1)
-    return orbs
+
 
 #game loop below here
 
@@ -263,7 +262,7 @@ while running:
                             orb.color = (255,0,0)
             orb.draw(screen)
     if game and not m_pause:
-        orbs = move_all(orbs,world)
+        move_all(orbs,world)
         world.Step(TIME_STEP, 10, 10)
         show_text(screen,("level "+str(level)),520,550,WHITE,20)
         orbs.sort(key=(lambda x: x.mass),reverse=True)
