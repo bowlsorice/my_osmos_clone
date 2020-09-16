@@ -6,7 +6,12 @@ from Box2D.b2 import (world, polygonShape, circleShape,
     staticBody, dynamicBody, pi, globals)
 
 #TO DO:
+#fix pushing bug - done!
+#make babies push other orbs on collision/absorption
+    # might need to play w/density/size/scale
 #figure out zoom in/out
+    #draw everything based off screen size, ppm, player location
+    # special case for zoom all the way out- don't trace/center on player
 #create art over orbs
 
 FPS = 60
@@ -101,7 +106,7 @@ def make_orbs(world,level):
             reduct = .25/distance
             vector = ((point[0]-orb.orb_body.position[0])*reduct,
                 (point[1]-orb.orb_body.position[1])*reduct)
-            orb.orb_body.linearVelocity.Set(vector[0],vector[1])
+            #orb.orb_body.linearVelocity.Set(vector[0],vector[1])
             created+=1
 
     return orbs, player
@@ -151,13 +156,10 @@ def move_all(orbs,world):
         for other in orbs:
             if other != orb:
                 if (orb.mass>other.mass and
-                    (distances[other]-other.radius-orb.radius)<=.1):
-                    if other.mass>=5.5:
-                        other.addMass(-5)
-                        if distances[other]!=0:
-                            reduct = other.radius/distances[other]
-                        else:
-                            reduct = other.radius
+                    (distances[other]-other.radius-orb.radius)<.01):
+                    if other.mass>5:
+                        other.addMass(-1)
+                        reduct = .05 # change in mass/100*SIZE
                         vector = ((orb.orb_body.position[0]
                             -other.orb_body.position[0])*reduct,
                             (orb.orb_body.position[1]
@@ -165,10 +167,11 @@ def move_all(orbs,world):
                         move = (other.orb_body.position[0]+vector[0],
                             other.orb_body.position[1]+vector[1])
                         other.orb_body.transform = (move,other.orb_body.angle)
+                        #hmm
                     else:
                         world.DestroyBody(other.orb_body)
                         orbs.remove(other)
-                    orb.addMass(.5)
+                    orb.addMass(.1)
     return orbs
 
 #game loop below here
