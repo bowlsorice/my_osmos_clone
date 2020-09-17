@@ -7,6 +7,8 @@ from Box2D.b2 import (world, polygonShape, circleShape,
 PPM = 20.0
 VIEW = 600,600
 SIZE = 5
+RED = (255,0,0)
+BLUE = (0,0,255)
 
 def zoom(num):
     global PPM
@@ -19,7 +21,7 @@ class Orb():
         self.orb_body = world.CreateDynamicBody(position=(pos),
             fixedRotation=True)
         self.mass = mass
-        self.color = (255,0,0)
+        self.color = RED
         self.radius = SIZE*(self.mass/100)
         self.circle = self.orb_body.CreateCircleFixture(radius=self.radius,
             density=10,friction=0,restitution=1)
