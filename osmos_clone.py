@@ -19,6 +19,8 @@ VIEW = 600,600
 TIME_STEP = 1.0/FPS
 WHITE = (255,255,255)
 BLACK = (0,0,0)
+RED = (255,0,0)
+BLUE = (0,0,255)
 
 game = False
 m_failed = False
@@ -96,7 +98,7 @@ def make_orbs(world,level):
         if ok:
             orb = Orb(world,(x,y),mass)
             if orb.mass<player.mass:
-                orb.color = (0,0,255)
+                orb.color = BLUE
             orbs.append(orb)
             point = random.randint(1,29),random.randint(1,29)
             while orb.circle.TestPoint(point):
@@ -247,19 +249,19 @@ while running:
         for orb in orbs:
             if orb != player:
                 if orb.mass<player.mass:
-                    if orb.color != (0,0,255):
+                    if orb.color != BLUE:
                         if orb.color[2]<245 and orb.color[0]>10:
                             orb.color = (orb.color[0]-10,orb.color[1],orb.color[2]+10)
                         else:
-                            orb.color = (0,0,255)
+                            orb.color = BLUE
 
 
                 else:
-                    if orb.color != (255,0,0):
+                    if orb.color != RED:
                         if orb.color[0]<245 and orb.color[2]>10:
                             orb.color = (orb.color[0]+10,orb.color[1],orb.color[2]-10)
                         else:
-                            orb.color = (255,0,0)
+                            orb.color = RED
             orb.draw(screen)
     if game and not m_pause:
         move_all(orbs,world)
