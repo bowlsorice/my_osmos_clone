@@ -22,6 +22,7 @@ BLACK = (0,0,0)
 RED = (255,0,0)
 BLUE = (0,0,255)
 
+
 game = False
 m_failed = False
 m_main = True
@@ -38,17 +39,17 @@ clock = pygame.time.Clock()
 world = world(gravity=(0,0), doSleep=True)
 
 ground_body = world.CreateStaticBody(position=(0,-4))
-ground_body.CreatePolygonFixture(box=(50,5),density = 10,
+ground_body.CreatePolygonFixture(box=(75,5),density = 10,
     restitution = 1, friction = 0)
-ceiling_body = world.CreateStaticBody(position=(0,VIEW[1]/PPM+4))
-ceiling_body.CreatePolygonFixture(box=(50,5),density = 10,
+ceiling_body = world.CreateStaticBody(position=(0,VIEW[1]/PPM_OUT+4))
+ceiling_body.CreatePolygonFixture(box=(75,5),density = 10,
     restitution = 1, friction = 0)
-right_wall_body = world.CreateStaticBody(position=(VIEW[0]/PPM+4,1)
+right_wall_body = world.CreateStaticBody(position=(VIEW[0]/PPM_OUT+4,1)
     ,angle=(pi/2))
-right_wall_body.CreatePolygonFixture(box=(50,5),density = 10,
+right_wall_body.CreatePolygonFixture(box=(75,5),density = 10,
     restitution = 1, friction = 0)
 left_wall_body = world.CreateStaticBody(position=(-4,1),angle=(pi/2))
-left_wall_body.CreatePolygonFixture(box=(50,5),density = 10,
+left_wall_body.CreatePolygonFixture(box=(75,5),density = 10,
     restitution = 1, friction = 0)
 walls = [ground_body,ceiling_body,right_wall_body,left_wall_body]
 
@@ -75,8 +76,8 @@ def make_orbs(world,level):
             mass = random.randint(5,15)
         elif range_med[0]<=size<=range_med[1]:
             mass = random.randint(16,40)
-        x = random.randint(5,VIEW[0]/PPM-5)
-        y = random.randint(5,VIEW[1]/PPM-5)
+        x = random.randint(5,VIEW[0]/PPM_OUT-5)
+        y = random.randint(5,VIEW[1]/PPM_OUT-5)
         ok = True
         for orb in orbs:
             radius = 5*mass/100
@@ -114,18 +115,17 @@ def make_orbs(world,level):
     return orbs, player
 
 
-def draw_poly(polygon,body,fixture):
-    vertices = [(body.transform * v) * PPM for v in polygon.vertices]
+def draw_wall(wall):
+    #if PPM != PPM_OUT:
+    vertices = [((wall.transform * v)-TRANS)
+        * PPM for v in wall.fixtures[0].shape.vertices]
+    #else:
+        #vertices = [((wall.transform * v))
+            #* PPM for v in wall.fixtures[0].shape.vertices]
     vertices = [(v[0], VIEW[1]-v[1]) for v in vertices]
     pygame.draw.polygon(screen,WHITE,vertices)
-polygonShape.draw = draw_poly
 
-def draw_circle(circle,body,fixture):
-    position = body.transform * circle.pos * PPM #get corresponding coords
-    position = position[0],600-position[1]
-    pygame.draw.circle(screen,WHITE,
-        (int(position[0]),int(position[1])),int(circle.radius*PPM))
-circleShape.draw = draw_circle #assigns this to draw function
+
 
 def show_text(screen,text,x,y,color,size):
     text_list = text.split('*')
@@ -189,7 +189,7 @@ while running:
         if game:
             if not m_pause:
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    player.thrust(world,orbs)
+                    player.thrust(world,orbs,TRANS)
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_UP:
                         if PPM<=95:
@@ -243,9 +243,11 @@ while running:
 
     screen.fill(BLACK)
     if game:
+        TRANS = (player.orb_body.position[0] - 300/(PPM),
+            player.orb_body.position[1] - 300/(PPM))
+
         for body in walls:
-            for fixture in body.fixtures:
-                fixture.shape.draw(body,fixture)
+            draw_wall(body)
         for orb in orbs:
             if orb != player:
                 if orb.mass<player.mass:
@@ -262,7 +264,7 @@ while running:
                             orb.color = (orb.color[0]+10,orb.color[1],orb.color[2]-10)
                         else:
                             orb.color = RED
-            orb.draw(screen)
+            orb.draw(screen,TRANS)
     if game and not m_pause:
         move_all(orbs,world)
         world.Step(TIME_STEP, 10, 10)
@@ -271,6 +273,7 @@ while running:
         if orbs[0] == player:
             game = False
             m_passed = True
+
 
 
     elif m_pause:
@@ -302,6 +305,7 @@ while running:
         pygame.draw.circle(screen,WHITE,(115,550),10)
         pygame.draw.circle(screen,WHITE,(130,500),35)
         pygame.draw.circle(screen,WHITE,(200,600),10)
+
 
     pygame.display.flip()
     clock.tick(FPS)
