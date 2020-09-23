@@ -38,18 +38,18 @@ clock = pygame.time.Clock()
 
 world = world(gravity=(0,0), doSleep=True)
 
-ground_body = world.CreateStaticBody(position=(0,-4))
-ground_body.CreatePolygonFixture(box=(75,5),density = 10,
+ground_body = world.CreateStaticBody(position=(0,-7))
+ground_body.CreatePolygonFixture(box=(75,8),density = 10,
     restitution = 1, friction = 0)
-ceiling_body = world.CreateStaticBody(position=(0,VIEW[1]/PPM_OUT+4))
-ceiling_body.CreatePolygonFixture(box=(75,5),density = 10,
+ceiling_body = world.CreateStaticBody(position=(0,VIEW[1]/PPM_OUT+7))
+ceiling_body.CreatePolygonFixture(box=(75,8),density = 10,
     restitution = 1, friction = 0)
-right_wall_body = world.CreateStaticBody(position=(VIEW[0]/PPM_OUT+4,1)
+right_wall_body = world.CreateStaticBody(position=(VIEW[0]/PPM_OUT+7,1)
     ,angle=(pi/2))
-right_wall_body.CreatePolygonFixture(box=(75,5),density = 10,
+right_wall_body.CreatePolygonFixture(box=(75,8),density = 10,
     restitution = 1, friction = 0)
-left_wall_body = world.CreateStaticBody(position=(-4,1),angle=(pi/2))
-left_wall_body.CreatePolygonFixture(box=(75,5),density = 10,
+left_wall_body = world.CreateStaticBody(position=(-7,1),angle=(pi/2))
+left_wall_body.CreatePolygonFixture(box=(75,8),density = 10,
     restitution = 1, friction = 0)
 walls = [ground_body,ceiling_body,right_wall_body,left_wall_body]
 
@@ -243,6 +243,7 @@ while running:
 
     screen.fill(BLACK)
     if game:
+        #PPM = ((100-player.mass)/100)*60
         TRANS = (player.orb_body.position[0] - 300/(PPM),
             player.orb_body.position[1] - 300/(PPM))
 
